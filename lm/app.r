@@ -93,7 +93,7 @@ server <- function(input, output) {
         plot(dataInput()$x,dataInput()$y)
     })
     
-    output$lmtPlot <- renderPlot({
+    output$lmPlot <- renderPlot({
         plot(dataInput()$x,dataInput()$y)
     })
     
