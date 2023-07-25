@@ -57,20 +57,6 @@ ui <- fluidPage(
                          selected = "head")
         ),
 
-                 # Add the button to model the data
-      actionButton("model_button", "Model Data"),
-),
-
-    
-    # Output slope, intercept, and correlation coefficient
-    h3("Linear Model Results:"),
-    h5("Slope:"),
-    verbatimTextOutput("slope"),
-    h5("Intercept:"),
-    verbatimTextOutput("intercept"),
-    h5("Correlation Coefficient:"),
-    verbatimTextOutput("correlation"),
-
         # Show a plot of the generated distribution
         mainPanel(
            plotOutput("distPlot"),
@@ -102,45 +88,12 @@ server <- function(input, output) {
     #     hist(x, breaks = bins, col = 'darkgray', border = 'white')
     # })
     # 
+    output$distPlot <- renderPlot({
+        plot(dataInput()$x,dataInput()$y)
+    })
     
-output$distPlot <- renderPlot({
-        data <- dataInput()
-        plot(data[, 1], data[, 2], xlab = colnames(data)[1], ylab = colnames(data)[2], main = "Scatter Plot")
-    })
-
-    # Function to fit a linear model and return the model object and predictions
-    fit_linear_model <- function() {
-        data <- dataInput()
-        lm_fit <- lm(data[, 2] ~ data[, 1])  # Fit a linear model using the first two columns of data
-        data$predictions <- predict(lm_fit)  # Generate predictions from the linear model
-        return(list(model = lm_fit, predictions = data$predictions))
-    }
-
-  # Click event for "Model Data" button
-observeEvent(input$model_button, {
-    model_result <- fit_linear_model()
     output$lmPlot <- renderPlot({
-        data <- dataInput()
-        plot(data[, 1], data[, 2], xlab = colnames(data)[1], ylab = colnames(data)[2], main = "Scatter Plot with Linear Model", col = "blue")
-        lines(data[, 1], model_result$predictions, col = "red")  # Overlay the linear model predictions in red
-    })
-
-     # Calculate and output slope, intercept, and correlation coefficient
-        model <- model_result$model
-        if (!is.null(model)) {
-            output$slope <- renderText({
-                coef(model)[[2]]
-            })
-
-            output$intercept <- renderText({
-                coef(model)[[1]]
-            })
-
-            output$correlation <- renderText({
-                data <- dataInput()
-                cor(data[, 2], model_result$predictions)
-            })
-        }
+        plot(dataInput()$x,dataInput()$y)
     })
     
     output$contents <- renderTable({
